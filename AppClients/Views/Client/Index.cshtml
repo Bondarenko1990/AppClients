@@ -1,0 +1,167 @@
+﻿@using AppClients.Models
+@model IndexViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="title">
+    <div class="row">
+        <div class="col-md-3" style="padding-top:10px; padding-left:35px;">
+            <h4>List of clients </h4>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+               <div class="filter">
+                <div class="row">
+                    @using (Html.BeginForm("FilterFirstName", "Client"))
+                    {
+                        <div class="col-md-3">
+                            @Html.DropDownList("FirstName", ViewBag.FirstNames as SelectList, htmlAttributes: new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-2">
+                           <div class="inputfilter">
+                            <input type="submit" class="btn btn-success btn-xs" value="Filter" />
+                           </div>
+                        </div>
+                        <div class="col-md-2">
+
+                        </div>
+                    }
+                    @using (Html.BeginForm("FilterCity", "Client"))
+                    {
+                        <div class="col-md-3">
+                            @Html.DropDownList("City", ViewBag.Citys as SelectList, htmlAttributes: new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-2">
+                            <div class="inputfilter">
+                                <input type="submit" class="btn btn-success btn-xs" value="Filter" />
+                            </div>
+                        </div>
+                    }
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="col-md-3" style="padding-top:10px; padding-left:35px;">
+            <h4>List of client tasks</h4>
+        </div>
+    </div>
+</div>
+<div class="shapka">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="row">
+                <div class="col-md-2">
+                    <h5>&nbsp&nbspFirst Name</h5>
+                </div>
+                <div class="col-md-2">
+                    <h5>&nbsp&nbspLast Name</h5>
+                </div>
+                <div class="col-md-4">
+                    <h5>&nbsp&nbspAddress</h5>
+                </div>
+                <div class="col-md-4">
+                    <h5>&nbsp&nbspPhone</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="row">
+                <div class="col-md-2">
+                    <h5>&nbsp&nbspTask Name</h5>
+                </div>
+                <div class="col-md-4">
+                    <h5>&nbsp&nbspDescription</h5>
+                </div>
+                <div class="col-md-2">
+                    <h5>&nbsp&nbspClient Address</h5>
+                </div>
+                <div class="col-md-2">
+                    <h5>Start time</h5>
+                </div>
+                <div class="col-md-1">
+                    <h5>End time</h5>
+                </div>
+                <div class="col-md-1">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@foreach (var client in Model.Clients)
+{
+    var line = "";
+    <div class="client">
+        <div class="row">
+            <div class="col-md-5">
+
+                <div class="col-md-2">
+                    @client.FirstName
+                </div>
+                <div class="col-md-2">
+                    @client.LastName
+                </div>
+                <div class="col-md-4">
+                    @client.City<span>, </span>@client.Address
+                </div>
+                <div class="col-md-4">
+                    @foreach (var property in client.GetType().GetProperties())
+                    {
+                        if ((property.Name == "Phone1" || property.Name == "Phone2" || property.Name == "Phone3") && property.GetValue(client) != null)
+                        {
+                            if (line == "")
+                            {
+                                line = property.GetValue(client).ToString();
+                            }
+                            else
+                            {
+                                line = line + ", " + property.GetValue(client).ToString();
+                            }
+                        }
+                    }
+                    <p>@line</p>
+                </div>
+
+            </div>
+            <div class="col-md-7">
+
+                @foreach (var task in client.Tasks)
+                {
+                    <div class="task">
+                        <div class="row">
+                            <div class="col-md-2">
+                                @task.TaskName
+                            </div>
+                            <div class="col-md-4">
+                                @task.Description
+                            </div>
+                            <div class="col-md-2">
+                                @client.City<span>, </span>@client.Address
+                            </div>
+                            <div class="col-md-2">
+                                @task.StartTime.ToString("HH:mm")
+                            </div>
+                            <div class="col-md-1">
+                                @task.StartTime.ToString("HH:mm")
+                            </div>
+                            <div class="col-md-1">
+                                @using (Html.BeginForm("DeleteTask", "Client"))
+                                {
+                                    @Html.Hidden("ClientId", client.Id)
+                                    @Html.Hidden("TaskId", task.Id)
+                                    <input type="submit"
+                                           class="btn btn-danger btn-xs"
+                                           value="Delete" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+
